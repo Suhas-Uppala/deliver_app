@@ -1,30 +1,69 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import MapView, { Marker, Polyline } from 'react-native-maps';
+import MapViewDirections from 'react-native-maps-directions';
+
+const GOOGLE_MAPS_APIKEY = 'YOUR_GOOGLE_MAPS_API_KEY'; // Replace with your API key
 
 const DeliveryTrackingScreen = () => {
   const routeStops = [
-    { time: '08:00 AM', address: '206 Beach Blvd, Miami, FL' },
-    { time: '09:50 AM', address: 'NW Ave, Coral Gables, FL' },
-    { time: '11:25 AM', address: '2771 Haskell Ave, Dallas, TX' },
-    { time: '12:45 PM', address: '150 Travis St, Chicago, IL' },
-    { time: '01:50 PM', address: '102 Collins Ave, Chicago, IL' },
+    { 
+      id: '1', 
+      time: '08:00 AM', 
+      address: 'Charminar, Hyderabad, Telangana', 
+      latitude: 17.3616, 
+      longitude: 78.4747 
+    },
+    { 
+      id: '2', 
+      time: '09:30 AM', 
+      address: 'HITEC City, Hyderabad, Telangana', 
+      latitude: 17.4448, 
+      longitude: 78.3489 
+    },
+    { 
+      id: '3', 
+      time: '11:00 AM', 
+      address: 'Gachibowli, Hyderabad, Telangana', 
+      latitude: 17.4304, 
+      longitude: 78.3398 
+    },
+    { 
+      id: '4', 
+      time: '12:15 PM', 
+      address: 'Banjara Hills, Hyderabad, Telangana', 
+      latitude: 17.4125, 
+      longitude: 78.4483 
+    },
+    { 
+      id: '5', 
+      time: '01:30 PM', 
+      address: 'Secunderabad, Hyderabad, Telangana', 
+      latitude: 17.4399, 
+      longitude: 78.4983 
+    },
   ];
 
-  // Render each route stop
+  const [selectedDelivery, setSelectedDelivery] = useState(routeStops[0]);
+
   const renderRouteStop = ({ item }) => (
-    <View style={styles.routeItem}>
+    <TouchableOpacity
+      style={[
+        styles.routeItem,
+        selectedDelivery.id === item.id && styles.selectedItem,
+      ]}
+      onPress={() => setSelectedDelivery(item)}
+    >
       <Text style={styles.routeTime}>{item.time}</Text>
       <Text style={styles.routeAddress}>{item.address}</Text>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
     <FlatList
-      data={routeStops} // Dynamic data for route stops
-      keyExtractor={(item, index) => index.toString()}
+      data={routeStops}
+      keyExtractor={(item) => item.id}
       renderItem={renderRouteStop}
-      // Static content before the list
       ListHeaderComponent={
         <View>
           {/* Header */}
@@ -34,15 +73,19 @@ const DeliveryTrackingScreen = () => {
 
           {/* Tracking Card */}
           <View style={styles.trackingCard}>
-            <Text style={styles.trackingNumber}>#657890</Text>
+            <Text style={styles.trackingNumber}>#HYD657890</Text>
             <Text style={styles.status}>On The Way</Text>
             <View style={styles.estimatedTime}>
               <Text style={styles.timeLabel}>Estimated Time</Text>
               <Text style={styles.time}>11:45 AM</Text>
               <Text style={styles.date}>Dec 9, 2024</Text>
             </View>
-            <Text style={styles.address}>206 Beach Blvd, Miami, FL</Text>
-            <Text style={styles.address}>102 Collins Ave, Chicago, IL</Text>
+            <Text style={styles.address}>
+              From: Charminar, Hyderabad, Telangana
+            </Text>
+            <Text style={styles.address}>
+              To: Secunderabad, Hyderabad, Telangana
+            </Text>
           </View>
 
           {/* Map Section */}
@@ -50,16 +93,71 @@ const DeliveryTrackingScreen = () => {
             <MapView
               style={styles.map}
               initialRegion={{
-                latitude: 41.8781,
-                longitude: -87.6298,
-                latitudeDelta: 5,
-                longitudeDelta: 5,
+                latitude: selectedDelivery.latitude,
+                longitude: selectedDelivery.longitude,
+                latitudeDelta: 0.1,
+                longitudeDelta: 0.1,
+              }}
+              region={{
+                latitude: selectedDelivery.latitude,
+                longitude: selectedDelivery.longitude,
+                latitudeDelta: 0.1,
+                longitudeDelta: 0.1,
               }}
             >
+              {/* Current Marker */}
               <Marker
-                coordinate={{ latitude: 41.8781, longitude: -87.6298 }}
-                title="Current Location"
+                coordinate={{
+                  latitude: selectedDelivery.latitude,
+                  longitude: selectedDelivery.longitude,
+                }}
+                title={selectedDelivery.address}
+                description={`Scheduled Time: ${selectedDelivery.time}`}
               />
+
+              {/* Next Marker and Route */}
+              {selectedDelivery.id !== routeStops[routeStops.length - 1].id && (
+                <>
+                  {/* Next Stop Marker */}
+                  <Marker
+                    coordinate={{
+                      latitude:
+                        routeStops[
+                          parseInt(selectedDelivery.id, 10)
+                        ].latitude,
+                      longitude:
+                        routeStops[
+                          parseInt(selectedDelivery.id, 10)
+                        ].longitude,
+                    }}
+                    title={
+                      routeStops[
+                        parseInt(selectedDelivery.id, 10)
+                      ].address
+                    }
+                  />
+                  {/* Route Line */}
+                  <MapViewDirections
+                    origin={{
+                      latitude: selectedDelivery.latitude,
+                      longitude: selectedDelivery.longitude,
+                    }}
+                    destination={{
+                      latitude:
+                        routeStops[
+                          parseInt(selectedDelivery.id, 10)
+                        ].latitude,
+                      longitude:
+                        routeStops[
+                          parseInt(selectedDelivery.id, 10)
+                        ].longitude,
+                    }}
+                    apikey={GOOGLE_MAPS_APIKEY}
+                    strokeWidth={3}
+                    strokeColor="blue"
+                  />
+                </>
+              )}
             </MapView>
           </View>
 
@@ -67,10 +165,11 @@ const DeliveryTrackingScreen = () => {
           <Text style={styles.detailsHeader}>Route Details</Text>
         </View>
       }
-      // Static content after the list
       ListFooterComponent={
         <View style={styles.footer}>
-          <Text style={styles.footerText}>All deliveries are on schedule!</Text>
+          <Text style={styles.footerText}>
+            All deliveries are on schedule!
+          </Text>
         </View>
       }
     />
@@ -78,9 +177,6 @@ const DeliveryTrackingScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  body:{
-    padding:20
-  },
   container: {
     flex: 1,
     backgroundColor: '#F8F9FA',
@@ -92,7 +188,6 @@ const styles = StyleSheet.create({
   headerText: {
     color: '#FFF',
     fontSize: 20,
-    margin: 8,
     fontWeight: 'bold',
   },
   trackingCard: {
@@ -147,6 +242,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginVertical: 8,
     marginHorizontal: 16,
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: '#FFF',
+    elevation: 1,
+  },
+  selectedItem: {
+    backgroundColor: '#E3F2FD',
   },
   routeTime: {
     color: '#6C757D',
