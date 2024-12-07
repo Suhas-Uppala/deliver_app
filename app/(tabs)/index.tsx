@@ -1,246 +1,294 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
-import MapView, { Marker } from "react-native-maps";
-import MapViewDirections from "react-native-maps-directions";
+// import React, { useState } from "react";
+// import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+// import MapView, { Marker } from "react-native-maps";
+// import MapViewDirections from "react-native-maps-directions";
 
-const GOOGLE_MAPS_APIKEY = "AIzaSyBtxTZstdL4IhyhQ-BWSQ9pXJtusC6_QXw"; // Replace with your API key
+// const GOOGLE_MAPS_APIKEY = "AIzaSyBtxTZstdL4IhyhQ-BWSQ9pXJtusC6_QXw"; // Replace with your API key
 
-const DeliveryTrackingScreen = () => {
-  const routeStops = [
-    {
-      id: "1",
-      time: "08:00 AM",
-      address: "Charminar, Hyderabad, Telangana",
-      latitude: 17.3616,
-      longitude: 78.4747,
-    },
-    {
-      id: "2",
-      time: "09:30 AM",
-      address: "HITEC City, Hyderabad, Telangana",
-      latitude: 17.4448,
-      longitude: 78.3489,
-    },
-    {
-      id: "3",
-      time: "11:00 AM",
-      address: "Gachibowli, Hyderabad, Telangana",
-      latitude: 17.4304,
-      longitude: 78.3398,
-    },
-    {
-      id: "4",
-      time: "12:15 PM",
-      address: "Banjara Hills, Hyderabad, Telangana",
-      latitude: 17.4125,
-      longitude: 78.4483,
-    },
-    {
-      id: "5",
-      time: "01:30 PM",
-      address: "Secunderabad, Hyderabad, Telangana",
-      latitude: 17.4399,
-      longitude: 78.4983,
-    },
-  ];
+// const DeliveryTrackingScreen = () => {
+//   const routeStops = [
+//     {
+//       id: "1",
+//       time: "08:00 AM",
+//       address: "Charminar, Hyderabad, Telangana",
+//       latitude: 17.3616,
+//       longitude: 78.4747,
+//     },
+//     {
+//       id: "2",
+//       time: "09:30 AM",
+//       address: "HITEC City, Hyderabad, Telangana",
+//       latitude: 17.4448,
+//       longitude: 78.3489,
+//     },
+//     {
+//       id: "3",
+//       time: "11:00 AM",
+//       address: "Gachibowli, Hyderabad, Telangana",
+//       latitude: 17.4304,
+//       longitude: 78.3398,
+//     },
+//     {
+//       id: "4",
+//       time: "12:15 PM",
+//       address: "Banjara Hills, Hyderabad, Telangana",
+//       latitude: 17.4125,
+//       longitude: 78.4483,
+//     },
+//     {
+//       id: "5",
+//       time: "01:30 PM",
+//       address: "Secunderabad, Hyderabad, Telangana",
+//       latitude: 17.4399,
+//       longitude: 78.4983,
+//     },
+//   ];
 
-  const [selectedDelivery, setSelectedDelivery] = useState(routeStops[0]);
+//   const [selectedDelivery, setSelectedDelivery] = useState(routeStops[0]);
 
-  const renderRouteStop = ({ item }) => (
-    <TouchableOpacity
-      style={[
-        styles.routeItem,
-        selectedDelivery.id === item.id && styles.selectedItem,
-      ]}
-      onPress={() => setSelectedDelivery(item)}
-    >
-      <Text style={styles.routeTime}>{item.time}</Text>
-      <Text style={styles.routeAddress}>{item.address}</Text>
-    </TouchableOpacity>
-  );
+//   const renderRouteStop = ({ item }) => (
+//     <TouchableOpacity
+//       style={[
+//         styles.routeItem,
+//         selectedDelivery.id === item.id && styles.selectedItem,
+//       ]}
+//       onPress={() => setSelectedDelivery(item)}
+//     >
+//       <Text style={styles.routeTime}>{item.time}</Text>
+//       <Text style={styles.routeAddress}>{item.address}</Text>
+//     </TouchableOpacity>
+//   );
 
-  const nextStopIndex = parseInt(selectedDelivery.id, 10); // Get the index of the selected stop
-  const nextStop = routeStops[nextStopIndex]; // Get the next stop if it exists
+//   const nextStopIndex = parseInt(selectedDelivery.id, 10); // Get the index of the selected stop
+//   const nextStop = routeStops[nextStopIndex]; // Get the next stop if it exists
+
+//   return (
+//     <View style={styles.container}>
+//       {/* Header */}
+//       <View style={styles.header}>
+//         <Text style={styles.headerText}>OptiDeliver</Text>
+//       </View>
+
+//       {/* Tracking Card */}
+//       <View style={styles.trackingCard}>
+//         <Text style={styles.trackingNumber}>#HYD657890</Text>
+//         <Text style={styles.status}>On The Way</Text>
+//         <View style={styles.estimatedTime}>
+//           <Text style={styles.timeLabel}>Estimated Time</Text>
+//           <Text style={styles.time}>11:45 AM</Text>
+//           <Text style={styles.date}>Dec 9, 2024</Text>
+//         </View>
+//         <Text style={styles.address}>
+//           From: {routeStops[0].address}
+//         </Text>
+//         <Text style={styles.address}>
+//           To: {routeStops[routeStops.length - 1].address}
+//         </Text>
+//       </View>
+
+//       {/* Map Section */}
+//       <View style={styles.mapContainer}>
+//         <MapView
+//           style={styles.map}
+//           initialRegion={{
+//             latitude: selectedDelivery.latitude,
+//             longitude: selectedDelivery.longitude,
+//             latitudeDelta: 0.1,
+//             longitudeDelta: 0.1,
+//           }}
+//           region={{
+//             latitude: selectedDelivery.latitude,
+//             longitude: selectedDelivery.longitude,
+//             latitudeDelta: 0.1,
+//             longitudeDelta: 0.1,
+//           }}
+//         >
+//           {/* Current Stop Marker */}
+//           <Marker
+//             coordinate={{
+//               latitude: selectedDelivery.latitude,
+//               longitude: selectedDelivery.longitude,
+//             }}
+//             title={selectedDelivery.address}
+//             description={`Scheduled Time: ${selectedDelivery.time}`}
+//           />
+
+//           {/* Next Stop Marker and Route */}
+//           {nextStop && (
+//             <>
+//               {/* Next Stop Marker */}
+//               <Marker
+//                 coordinate={{
+//                   latitude: nextStop.latitude,
+//                   longitude: nextStop.longitude,
+//                 }}
+//                 title={nextStop.address}
+//               />
+//               {/* Route Line */}
+//               <MapViewDirections
+//                 origin={{
+//                   latitude: selectedDelivery.latitude,
+//                   longitude: selectedDelivery.longitude,
+//                 }}
+//                 destination={{
+//                   latitude: nextStop.latitude,
+//                   longitude: nextStop.longitude,
+//                 }}
+//                 apikey={GOOGLE_MAPS_APIKEY} // Ensure this is your actual API Key
+//                 strokeWidth={3}
+//                 strokeColor="blue"
+//                 mode="DRIVING" // Optional: you can set modes like "DRIVING", "WALKING", etc.
+//               />
+//             </>
+//           )}
+//         </MapView>
+//       </View>
+
+//       {/* Route Details */}
+//       <Text style={styles.detailsHeader}>Route Details</Text>
+//       <FlatList
+//         data={routeStops}
+//         keyExtractor={(item) => item.id}
+//         renderItem={renderRouteStop}
+//         style={styles.routeList}
+//       />
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: "#F8F9FA",
+//   },
+//   header: {
+//     backgroundColor: "#007BFF",
+//     padding: 16,
+//   },
+//   headerText: {
+//     color: "#FFF",
+//     fontSize: 20,
+//     fontWeight: "bold",
+//   },
+//   trackingCard: {
+//     backgroundColor: "#FFF",
+//     margin: 16,
+//     padding: 16,
+//     borderRadius: 8,
+//     elevation: 2,
+//   },
+//   trackingNumber: {
+//     fontSize: 16,
+//     fontWeight: "bold",
+//   },
+//   status: {
+//     color: "#FFA500",
+//     marginVertical: 8,
+//     fontWeight: "bold",
+//   },
+//   estimatedTime: {
+//     marginVertical: 8,
+//   },
+//   timeLabel: {
+//     color: "#6C757D",
+//     fontSize: 14,
+//   },
+//   time: {
+//     fontSize: 18,
+//     fontWeight: "bold",
+//   },
+//   date: {
+//     color: "#6C757D",
+//   },
+//   address: {
+//     color: "#212529",
+//     marginVertical: 4,
+//   },
+//   mapContainer: {
+//     height: 250,
+//     margin: 16,
+//     borderRadius: 8,
+//     overflow: "hidden",
+//   },
+//   map: {
+//     ...StyleSheet.absoluteFillObject,
+//   },
+//   detailsHeader: {
+//     fontSize: 16,
+//     fontWeight: "bold",
+//     margin: 16,
+//   },
+//   routeList: {
+//     marginBottom: 16,
+//   },
+//   routeItem: {
+//     flexDirection: "row",
+//     marginVertical: 8,
+//     marginHorizontal: 16,
+//     padding: 8,
+//     borderRadius: 8,
+//     backgroundColor: "#FFF",
+//     elevation: 1,
+//   },
+//   selectedItem: {
+//     backgroundColor: "#E3F2FD",
+//   },
+//   routeTime: {
+//     color: "#6C757D",
+//     width: 80,
+//   },
+//   routeAddress: {
+//     color: "#212529",
+//     flex: 1,
+//   },
+// });
+
+// export default DeliveryTrackingScreen;
+
+
+import React, { useEffect, useState } from "react";
+import { AppRegistry } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import LoginScreen from "D:/sih24/postdel/app/frontend/LoginScreen.js";
+import HomeScreen from "D:/sih24/postdel/app/frontend/HomeScreen.js";
+import { name as appName } from "D:/sih24/postdel/app.json";
+
+const Stack = createStackNavigator();
+
+const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const user = await AsyncStorage.getItem("user");
+      if (user) {
+        setIsLoggedIn(true);
+      }
+    };
+    checkLoginStatus();
+  }, []);
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerText}>OptiDeliver</Text>
-      </View>
-
-      {/* Tracking Card */}
-      <View style={styles.trackingCard}>
-        <Text style={styles.trackingNumber}>#HYD657890</Text>
-        <Text style={styles.status}>On The Way</Text>
-        <View style={styles.estimatedTime}>
-          <Text style={styles.timeLabel}>Estimated Time</Text>
-          <Text style={styles.time}>11:45 AM</Text>
-          <Text style={styles.date}>Dec 9, 2024</Text>
-        </View>
-        <Text style={styles.address}>
-          From: {routeStops[0].address}
-        </Text>
-        <Text style={styles.address}>
-          To: {routeStops[routeStops.length - 1].address}
-        </Text>
-      </View>
-
-      {/* Map Section */}
-      <View style={styles.mapContainer}>
-        <MapView
-          style={styles.map}
-          initialRegion={{
-            latitude: selectedDelivery.latitude,
-            longitude: selectedDelivery.longitude,
-            latitudeDelta: 0.1,
-            longitudeDelta: 0.1,
-          }}
-          region={{
-            latitude: selectedDelivery.latitude,
-            longitude: selectedDelivery.longitude,
-            latitudeDelta: 0.1,
-            longitudeDelta: 0.1,
-          }}
-        >
-          {/* Current Stop Marker */}
-          <Marker
-            coordinate={{
-              latitude: selectedDelivery.latitude,
-              longitude: selectedDelivery.longitude,
-            }}
-            title={selectedDelivery.address}
-            description={`Scheduled Time: ${selectedDelivery.time}`}
+    <NavigationContainer>
+      <Stack.Navigator>
+        {isLoggedIn ? (
+          <Stack.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{ headerShown: false }}
           />
-
-          {/* Next Stop Marker and Route */}
-          {nextStop && (
-            <>
-              {/* Next Stop Marker */}
-              <Marker
-                coordinate={{
-                  latitude: nextStop.latitude,
-                  longitude: nextStop.longitude,
-                }}
-                title={nextStop.address}
-              />
-              {/* Route Line */}
-              <MapViewDirections
-                origin={{
-                  latitude: selectedDelivery.latitude,
-                  longitude: selectedDelivery.longitude,
-                }}
-                destination={{
-                  latitude: nextStop.latitude,
-                  longitude: nextStop.longitude,
-                }}
-                apikey={GOOGLE_MAPS_APIKEY} // Ensure this is your actual API Key
-                strokeWidth={3}
-                strokeColor="blue"
-                mode="DRIVING" // Optional: you can set modes like "DRIVING", "WALKING", etc.
-              />
-            </>
-          )}
-        </MapView>
-      </View>
-
-      {/* Route Details */}
-      <Text style={styles.detailsHeader}>Route Details</Text>
-      <FlatList
-        data={routeStops}
-        keyExtractor={(item) => item.id}
-        renderItem={renderRouteStop}
-        style={styles.routeList}
-      />
-    </View>
+        ) : (
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F8F9FA",
-  },
-  header: {
-    backgroundColor: "#007BFF",
-    padding: 16,
-  },
-  headerText: {
-    color: "#FFF",
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  trackingCard: {
-    backgroundColor: "#FFF",
-    margin: 16,
-    padding: 16,
-    borderRadius: 8,
-    elevation: 2,
-  },
-  trackingNumber: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  status: {
-    color: "#FFA500",
-    marginVertical: 8,
-    fontWeight: "bold",
-  },
-  estimatedTime: {
-    marginVertical: 8,
-  },
-  timeLabel: {
-    color: "#6C757D",
-    fontSize: 14,
-  },
-  time: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  date: {
-    color: "#6C757D",
-  },
-  address: {
-    color: "#212529",
-    marginVertical: 4,
-  },
-  mapContainer: {
-    height: 250,
-    margin: 16,
-    borderRadius: 8,
-    overflow: "hidden",
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  detailsHeader: {
-    fontSize: 16,
-    fontWeight: "bold",
-    margin: 16,
-  },
-  routeList: {
-    marginBottom: 16,
-  },
-  routeItem: {
-    flexDirection: "row",
-    marginVertical: 8,
-    marginHorizontal: 16,
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: "#FFF",
-    elevation: 1,
-  },
-  selectedItem: {
-    backgroundColor: "#E3F2FD",
-  },
-  routeTime: {
-    color: "#6C757D",
-    width: 80,
-  },
-  routeAddress: {
-    color: "#212529",
-    flex: 1,
-  },
-});
-
-export default DeliveryTrackingScreen;
+AppRegistry.registerComponent(appName, () => App);
