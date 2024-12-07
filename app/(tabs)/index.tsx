@@ -1,74 +1,170 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const DeliveryTrackingScreen = () => {
+  const routeStops = [
+    { time: '08:00 AM', address: '206 Beach Blvd, Miami, FL' },
+    { time: '09:50 AM', address: 'NW Ave, Coral Gables, FL' },
+    { time: '11:25 AM', address: '2771 Haskell Ave, Dallas, TX' },
+    { time: '12:45 PM', address: '150 Travis St, Chicago, IL' },
+    { time: '01:50 PM', address: '102 Collins Ave, Chicago, IL' },
+  ];
 
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  // Render each route stop
+  const renderRouteStop = ({ item }) => (
+    <View style={styles.routeItem}>
+      <Text style={styles.routeTime}>{item.time}</Text>
+      <Text style={styles.routeAddress}>{item.address}</Text>
+    </View>
   );
-}
+
+  return (
+    <FlatList
+      data={routeStops} // Dynamic data for route stops
+      keyExtractor={(item, index) => index.toString()}
+      renderItem={renderRouteStop}
+      // Static content before the list
+      ListHeaderComponent={
+        <View>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.headerText}>OptiDeliver</Text>
+          </View>
+
+          {/* Tracking Card */}
+          <View style={styles.trackingCard}>
+            <Text style={styles.trackingNumber}>#657890</Text>
+            <Text style={styles.status}>On The Way</Text>
+            <View style={styles.estimatedTime}>
+              <Text style={styles.timeLabel}>Estimated Time</Text>
+              <Text style={styles.time}>11:45 AM</Text>
+              <Text style={styles.date}>Dec 9, 2024</Text>
+            </View>
+            <Text style={styles.address}>206 Beach Blvd, Miami, FL</Text>
+            <Text style={styles.address}>102 Collins Ave, Chicago, IL</Text>
+          </View>
+
+          {/* Map Section */}
+          <View style={styles.mapContainer}>
+            <MapView
+              style={styles.map}
+              initialRegion={{
+                latitude: 41.8781,
+                longitude: -87.6298,
+                latitudeDelta: 5,
+                longitudeDelta: 5,
+              }}
+            >
+              <Marker
+                coordinate={{ latitude: 41.8781, longitude: -87.6298 }}
+                title="Current Location"
+              />
+            </MapView>
+          </View>
+
+          {/* Route Details Header */}
+          <Text style={styles.detailsHeader}>Route Details</Text>
+        </View>
+      }
+      // Static content after the list
+      ListFooterComponent={
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>All deliveries are on schedule!</Text>
+        </View>
+      }
+    />
+  );
+};
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  body:{
+    padding:20
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+  },
+  header: {
+    backgroundColor: '#007BFF',
+    padding: 16,
+  },
+  headerText: {
+    color: '#FFF',
+    fontSize: 20,
+    margin: 8,
+    fontWeight: 'bold',
+  },
+  trackingCard: {
+    backgroundColor: '#FFF',
+    margin: 16,
+    padding: 16,
+    borderRadius: 8,
+    elevation: 2,
+  },
+  trackingNumber: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  status: {
+    color: '#FFA500',
+    marginVertical: 8,
+    fontWeight: 'bold',
+  },
+  estimatedTime: {
+    marginVertical: 8,
+  },
+  timeLabel: {
+    color: '#6C757D',
+    fontSize: 14,
+  },
+  time: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  date: {
+    color: '#6C757D',
+  },
+  address: {
+    color: '#212529',
+    marginVertical: 4,
+  },
+  mapContainer: {
+    height: 200,
+    margin: 16,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  detailsHeader: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    margin: 16,
+  },
+  routeItem: {
     flexDirection: 'row',
+    marginVertical: 8,
+    marginHorizontal: 16,
+  },
+  routeTime: {
+    color: '#6C757D',
+    width: 80,
+  },
+  routeAddress: {
+    color: '#212529',
+    flex: 1,
+  },
+  footer: {
+    marginTop: 16,
     alignItems: 'center',
-    gap: 8,
+    padding: 16,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  footerText: {
+    color: '#6C757D',
+    fontStyle: 'italic',
   },
 });
+
+export default DeliveryTrackingScreen;
